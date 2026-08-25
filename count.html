@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <!-- スマホでの表示を最適化 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 検索エンジンにインデックスさせない（検索結果に出さない）設定 -->
+    <meta name="robots" content="noindex, nofollow">
+    
+    <title>簡易カウンター</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        .counter-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .counter-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .counter-label {
+            font-size: 1.2rem;
+            font-weight: bold;
+            width: 40px;
+        }
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        button {
+            width: 45px;
+            height: 45px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+            /* スマホでのタップハイライトを無効化 */
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn-minus {
+            background-color: #ff4d4f;
+            color: white;
+        }
+        .btn-minus:active { background-color: #d9363e; }
+        
+        .btn-plus {
+            background-color: #1890ff;
+            color: white;
+        }
+        .btn-plus:active { background-color: #096dd9; }
+        
+        .count-display {
+            font-size: 1.8rem;
+            font-weight: bold;
+            min-width: 50px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>カウンター</h1>
+
+    <div class="counter-container" id="counters">
+        <!-- JavaScriptでここにカウンターを生成します -->
+    </div>
+
+    <script>
+        // カウンターの数
+        const COUNTER_COUNT = 6;
+        const container = document.getElementById('counters');
+
+        // カウントの値を保持する配列を初期化
+        let counts = Array(COUNTER_COUNT).fill(0);
+
+        // カウンターのUIを生成
+        for (let i = 0; i < COUNTER_COUNT; i++) {
+            const card = document.createElement('div');
+            card.className = 'counter-card';
+            
+            card.innerHTML = `
+                <div class="counter-label">${i + 1}</div>
+                <div class="controls">
+                    <button class="btn-minus" onclick="updateCount(${i}, -1)">-</button>
+                    <div class="count-display" id="count-${i}">0</div>
+                    <button class="btn-plus" onclick="updateCount(${i}, 1)">+</button>
+                </div>
+            `;
+            container.appendChild(card);
+        }
+
+        // カウントを更新する関数
+        function updateCount(index, change) {
+            counts[index] += change;
+            
+            // 0未満にはならないようにする場合（マイナスを許可する場合はこの行を削除）
+            // if (counts[index] < 0) counts[index] = 0; 
+            
+            document.getElementById(`count-${index}`).innerText = counts[index];
+        }
+    </script>
+</body>
+</html>
