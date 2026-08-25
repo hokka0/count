@@ -38,7 +38,6 @@
         .counter-label {
             font-size: 1.1rem;
             font-weight: bold;
-            /* 文字が長くても綺麗に表示されるように調整 */
             flex: 1; 
             padding-right: 10px;
             word-wrap: break-word;
@@ -79,6 +78,24 @@
             min-width: 45px;
             text-align: center;
         }
+        
+        /* リセットボタン用のデザイン */
+        .reset-container {
+            text-align: center;
+            margin-top: 30px;
+            padding-bottom: 20px;
+        }
+        .btn-reset {
+            width: auto;
+            height: auto;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            background-color: #6c757d;
+            color: white;
+            border-radius: 8px;
+        }
+        .btn-reset:active { background-color: #5a6268; }
     </style>
 </head>
 <body>
@@ -89,8 +106,13 @@
         <!-- JavaScriptでここにカウンターを生成します -->
     </div>
 
+    <!-- 全てリセットするボタン -->
+    <div class="reset-container">
+        <button class="btn-reset" onclick="resetCounts()">全て0にリセット</button>
+    </div>
+
     <script>
-        // カウンターのラベル（名前）を設定
+        // カウンターのラベル
         const LABELS = [
             "food",
             "drink",
@@ -102,8 +124,10 @@
         
         const container = document.getElementById('counters');
 
-        // カウントの値を保持する配列を初期化（ラベルの数に合わせて生成）
-        let counts = Array(LABELS.length).fill(0);
+        // ★追加機能：スマホ（ブラウザ）のLocalStorageから保存されたデータを読み込む
+        // データがない場合は0の配列を作る
+        const savedData = localStorage.getItem('myCounterData');
+        let counts = savedData ? JSON.parse(savedData) : Array(LABELS.length).fill(0);
 
         // カウンターのUIを生成
         for (let i = 0; i < LABELS.length; i++) {
@@ -114,7 +138,8 @@
                 <div class="counter-label">${LABELS[i]}</div>
                 <div class="controls">
                     <button class="btn-minus" onclick="updateCount(${i}, -1)">-</button>
-                    <div class="count-display" id="count-${i}">0</div>
+                    <!-- 読み込んだ数値を初期表示する -->
+                    <div class="count-display" id="count-${i}">${counts[i]}</div>
                     <button class="btn-plus" onclick="updateCount(${i}, 1)">+</button>
                 </div>
             `;
@@ -125,10 +150,31 @@
         function updateCount(index, change) {
             counts[index] += change;
             
-            // マイナスにならないようにする（0より小さくならない）
+            // マイナスにならないようにする
             if (counts[index] < 0) counts[index] = 0; 
             
+            // 画面の表示を更新
             document.getElementById(`count-${index}`).innerText = counts[index];
+            
+            // ★追加機能：数値が変わるたびにブラウザ（LocalStorage）に保存する
+            localStorage.setItem('myCounterData', JSON.stringify(counts));
+        }
+
+        // ★追加機能：全てをリセットする関数
+        function resetCounts() {
+            // 間違えて押さないように確認メッセージを出す
+            if (confirm("すべてのカウントを「0」にリセットしますか？")) {
+                // 配列をすべて0にする
+                counts = Array(LABELS.length).fill(0);
+                
+                // ブラウザの保存データを削除
+                localStorage.removeItem('myCounterData');
+                
+                // 画面の表示をすべて0に更新
+                for (let i = 0; i < LABELS.length; i++) {
+                    document.getElementById(`count-${i}`).innerText = 0;
+                }
+            }
         }
     </script>
 </body>
